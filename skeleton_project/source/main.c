@@ -4,8 +4,6 @@
 #include <time.h>
 #include "driver/elevio.h"
 
-// TESTTESTTEST
-
 
 int main(){
     elevio_init();
