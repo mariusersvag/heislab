@@ -5,7 +5,7 @@
 #include "driver/elevio.h"
 #include "../include/Handler.h"
 
-
+// FIKS KONSTRUKTOREN TIL ELEVATOR
 int main(){
     
     elevio_init();
