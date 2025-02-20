@@ -21,3 +21,6 @@ void closeDoor();
 void updateCurrentFloor();
 void setMotorDir(MotorDirection dir);
 
+void emergencyStop();
+void handleObstruction();
+

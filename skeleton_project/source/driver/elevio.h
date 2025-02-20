@@ -21,22 +21,36 @@ typedef enum {
 
 void elevio_init(void);
 
+//--------------------OUTPUTS---------------------------------------------------------
 
 //Setter motor dir
 void elevio_motorDirection(MotorDirection dirn);
 
-//
+//Set button lamps
 void elevio_buttonLamp(int floor, ButtonType button, int value);
 
-
+//Set floor lamp
 void elevio_floorIndicator(int floor);
+
+//Set door open lamp
 void elevio_doorOpenLamp(int value);
+
+//Set stop lamp
 void elevio_stopLamp(int value);
 
-//--------------------------------------------------------------------------------
 
+
+//------------------------INPUTS----------------------------------------------------
+
+//Returns a desired floor
 int elevio_callButton(int floor, ButtonType button);
+
+//Returns current floor
 int elevio_floorSensor(void);
+
+//Returns state of stop button
 int elevio_stopButton(void);
+
+//Check for obstruction
 int elevio_obstruction(void);
 
