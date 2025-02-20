@@ -1,6 +1,5 @@
 #include <time.h>
 #include "../include/Elevator.h"
-#include "Elevator.h"
 
 void stop(Elevator *p_elevator)
 {
