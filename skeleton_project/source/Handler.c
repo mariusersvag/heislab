@@ -18,7 +18,7 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
             bool queue_jp1_bgt_prev_floor = p_queue->queue[j + 1].floor > p_elevator->previous_floor;
             bool queue_j_bge_prev_floor = p_queue->queue[j].floor >= p_elevator->previous_floor;
             bool queue_j_ble_prev_floor = p_queue->queue[j].floor <= p_elevator->previous_floor;
-            bool jp1_right_direction = !(elevator_is_going_up ^ p_queue->queue[j + 1].dir == BUTTON_HALL_UP) || p_queue->queue[j + 1].dir == BUTTON_CAB; 
+            bool jp1_right_direction = !(elevator_is_going_up ^ (p_queue->queue[j + 1].dir == BUTTON_HALL_UP)) || p_queue->queue[j + 1].dir == BUTTON_CAB; 
 
             //Elevator is going up
             bool swap = elevator_is_going_up && !queue_jp1_bgt_queue_j1 && queue_jp1_bgt_prev_floor;
@@ -42,31 +42,31 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
     }
 }
 
-int main()
-{
-    printf("Testing:\n\n");
-    Elevator heiss =  {0, 4, 0, -1};
+// int main()
+// {
+//     printf("Testing:\n\n");
+//     Elevator heiss =  {0, 4, 0, -1};
 
-    OrderQueue navn = createQueue();
+//     OrderQueue navn = createQueue();
 
-    QueueEntry e1 = {1, BUTTON_HALL_UP};
-    QueueEntry e3 = {3, BUTTON_HALL_UP};
-    QueueEntry e2 = {2, BUTTON_HALL_UP};
-    QueueEntry e4 = {4, BUTTON_HALL_DOWN};
-    QueueEntry e5 = {3, BUTTON_HALL_DOWN};
-    QueueEntry e6 = {2, BUTTON_HALL_DOWN};
-    QueueEntry e7 = {1, BUTTON_CAB};
-    QueueEntry e8 = {2, BUTTON_CAB};
-    QueueEntry e9 = {3, BUTTON_CAB};
-    QueueEntry e10 = {4, BUTTON_CAB};    
+//     QueueEntry e1 = {1, BUTTON_HALL_UP};
+//     QueueEntry e3 = {3, BUTTON_HALL_UP};
+//     QueueEntry e2 = {2, BUTTON_HALL_UP};
+//     QueueEntry e4 = {4, BUTTON_HALL_DOWN};
+//     QueueEntry e5 = {3, BUTTON_HALL_DOWN};
+//     QueueEntry e6 = {2, BUTTON_HALL_DOWN};
+//     QueueEntry e7 = {1, BUTTON_CAB};
+//     QueueEntry e8 = {2, BUTTON_CAB};
+//     QueueEntry e9 = {3, BUTTON_CAB};
+//     QueueEntry e10 = {4, BUTTON_CAB};    
 
 
-    addToQueue(&navn, e1);
-    addToQueue(&navn, e9);
-    addToQueue(&navn, e6);
-    addToQueue(&navn, e7);
-    printQueue(&navn);
-    sortQueue(&navn, &heiss);
-    printQueue(&navn);
-    return 0;
-}
+//     addToQueue(&navn, e1);
+//     addToQueue(&navn, e9);
+//     addToQueue(&navn, e6);
+//     addToQueue(&navn, e7);
+//     printQueue(&navn);
+//     sortQueue(&navn, &heiss);
+//     printQueue(&navn);
+//     return 0;
+// }

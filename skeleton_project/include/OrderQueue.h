@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdio.h>
-#include "elevio.h"
+#include "../source/driver/elevio.h"
 
 #define QUEUESIZE 4
 

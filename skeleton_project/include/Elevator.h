@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <unistd.h>
 #include "OrderQueue.h"
 #include "../source/driver/elevio.h"
 

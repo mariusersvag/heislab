@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "Elevator.h"
 #include "OrderQueue.h"

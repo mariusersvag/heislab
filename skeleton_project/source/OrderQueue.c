@@ -1,5 +1,4 @@
 #include "../include/OrderQueue.h"
-#include "OrderQueue.h"
 
 void clearQueue(OrderQueue* p_queue)
 {
