@@ -15,7 +15,7 @@ typedef struct {
 void run();
 
 void sortQueue(OrderQueue* p_queue, Elevator* p_elevator);
-void processRequests();
+void processRequests(Elevator* p_elevator, OrderQueue* p_queue);
 
 
 

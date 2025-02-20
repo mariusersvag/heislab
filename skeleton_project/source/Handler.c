@@ -1,4 +1,5 @@
 #include "../include/Handler.h"
+#include "Handler.h"
 
 void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 {
@@ -41,6 +42,18 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
         }
     }
 }
+
+void processRequests(Elevator* p_elevator, OrderQueue* p_queue)
+{
+    for (int etasje = 0; etasje < N_FLOORS; etasje++){
+        for (ButtonType buttontype = 0; buttontype < N_BUTTONS; buttontype++) {
+            if (elevio_callButton(etasje, buttontype)){
+                QueueEntry entry = {etasje, buttontype};
+                addToQueue(p_queue, entry);
+            }
+        }
+    }
+} 
 
 // int main()
 // {

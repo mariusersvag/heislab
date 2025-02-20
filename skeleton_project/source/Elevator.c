@@ -19,21 +19,26 @@ void arrived(Elevator *p_elevator)
 {
     //Zero indexed lights
     elevio_floorIndicator(p_elevator->current_floor - 1);
+    sleep(3);
 }
 
 
 
 void moveTo(Elevator *p_elevator, int floor)
 {
+    updateCurrentFloor(p_elevator);
+
     if ((p_elevator->current_floor == 4) || (p_elevator->current_floor > floor)){
         setMotorDir(p_elevator, DIRN_DOWN);
     }
     else {
         setMotorDir(p_elevator, DIRN_UP);
-
-    
-    
     }
+
+    if (p_elevator->current_floor == floor) {
+        arrived(p_elevator);
+    }
+
 }
 
 
