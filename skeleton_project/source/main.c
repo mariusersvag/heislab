@@ -19,8 +19,14 @@ int main(){
     Elevator elevator = createElevator();
 
     while(handler.go){
-         
-        if (q.queue[0].floor != -1) 
+
+        processRequests(&q, &elevator);
+        sortQueue(&q, &elevator);
+        if (q.queue[0].floor != -1) {
+            moveToFloor(&elevator, q.queue[0].floor);
+        } else {
+            elevio_motorDirection(DIRN_STOP);
+        }
 
 
         
