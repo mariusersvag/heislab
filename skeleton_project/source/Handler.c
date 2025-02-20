@@ -1,9 +1,19 @@
 #include "../include/Handler.h"
-#include "Handler.h"
+
+
+void arrived(OrderQueue* p_queue, Elevator *p_elevator) 
+{
+    //Zero indexed lights
+    elevio_floorIndicator(p_elevator->current_floor - 1);
+    removeFromQueue(p_queue, p_elevator->current_floor);
+    sleep(3);
+}
+
+
+
 
 void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 {
-    
     
     for (int i = 0; i < QUEUESIZE; i++)
     {
@@ -43,7 +53,7 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
     }
 }
 
-void processRequests(Elevator* p_elevator, OrderQueue* p_queue)
+void processRequests(OrderQueue* p_queue, Elevator* p_elevator)
 {
     for (int etasje = 0; etasje < N_FLOORS; etasje++){
         for (ButtonType buttontype = 0; buttontype < N_BUTTONS; buttontype++) {

@@ -2,9 +2,10 @@
 
 void clearQueue(OrderQueue* p_queue)
 {
-    for (int i = 0; i < QUEUESIZE+1; i++)
+    for (int i = 0; i < QUEUESIZE; i++)
     {
         p_queue->queue[i].floor = -1;
+        
     }
 }
 

@@ -18,12 +18,29 @@ int main(){
     OrderQueue q = createQueue();
     Elevator elevator = createElevator();
 
+
+
+
+    for (int etasje = 0; etasje < N_FLOORS; etasje++){
+        for (ButtonType buttontype = 0; buttontype < N_BUTTONS; buttontype++) {
+            elevio_buttonLamp(etasje, buttontype, 0);
+            
+        }
+    }
+    elevio_stopLamp(0);
+    
+
     while(handler.go){
+
+        if(elevio_stopButton()){
+            elevio_motorDirection(DIRN_STOP);
+            break;
+        }
 
         processRequests(&q, &elevator);
         sortQueue(&q, &elevator);
         if (q.queue[0].floor != -1) {
-            moveToFloor(&elevator, q.queue[0].floor);
+            moveTo(&elevator, q.queue[0].floor);
         } else {
             elevio_motorDirection(DIRN_STOP);
         }

@@ -14,8 +14,10 @@ typedef struct {
 
 void run();
 
+
+void arrived(OrderQueue* p_queue, Elevator *p_elevator);
 void sortQueue(OrderQueue* p_queue, Elevator* p_elevator);
-void processRequests(Elevator* p_elevator, OrderQueue* p_queue);
+void processRequests(OrderQueue* p_queue, Elevator* p_elevator);
 
 
 

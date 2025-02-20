@@ -1,6 +1,5 @@
 #include <time.h>
 #include "../include/Elevator.h"
-#include "Elevator.h"
 
 void stop(Elevator *p_elevator)
 {
@@ -10,17 +9,10 @@ void stop(Elevator *p_elevator)
 
 Elevator createElevator()
 {   
-    Elevator elev;
+    Elevator elev = {};
     return elev;
 }
 
-
-void arrived(Elevator *p_elevator) 
-{
-    //Zero indexed lights
-    elevio_floorIndicator(p_elevator->current_floor - 1);
-    sleep(3);
-}
 
 
 

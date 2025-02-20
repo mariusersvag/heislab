@@ -15,7 +15,6 @@ typedef struct {
 Elevator createElevator();
 
 void stop(Elevator* p_elevator);
-void arrived(Elevator* p_elevator);
 void moveTo(Elevator* p_elevator, int floor);
 
 void openDoor(Elevator* p_elevator);
