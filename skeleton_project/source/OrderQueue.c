@@ -1,22 +1,40 @@
 #include "OrderQueue.h"
 
-void clear_queue(int *p_queue)
+void clearQueue(OrderQueue* p_queue)
 {
-    for (int i = 0; i < QUEUESIZE; i++)
+    for (int i = 0; i < QUEUESIZE+1; i++)
     {
-        p_queue[i] = -1;
+        p_queue->queue[i] = -1;
     }
 }
 
-void add_to_queue(int *p_queue, int floor)
+void addToQueue(OrderQueue* p_queue, int floor)
 {
     for (int i = 0; i < QUEUESIZE; i++)
     {
-        if (p_queue[i] == -1)
+        if (p_queue->queue[i] == -1)
         {
-            p_queue[i] = floor;
+            p_queue->queue[i] = floor;
             break;
         }
     }
 
+}
+
+void removeFromQueue(OrderQueue* p_queue, int floor)
+{
+    int i = 0;
+    while (p_queue->queue[i] == floor || p_queue->queue[i] == -1)
+    {
+        p_queue->queue[i] = p_queue->queue[i + 1];
+        p_queue->queue[i + 1] = -1;
+        i++;
+    }
+}
+
+OrderQueue createQueue()
+{
+    OrderQueue queue;
+    clear_queue(queue.queue);
+    return queue;
 }

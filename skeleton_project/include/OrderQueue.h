@@ -2,13 +2,18 @@
 #define QUEUESIZE 4
 
 typedef struct {
-    int queue[4];
+    int queue[QUEUESIZE];
 } OrderQueue;
 
 
 // empties the whole queue
-void clear_queue(int* p_queue[QUEUESIZE]);
+void clearQueue(OrderQueue* p_queue);
 
 // adds a floor to the queue
-void add_to_queue(int floor); 
+void addToQueue(int floor); 
 
+// removes a floor from the queue
+void removeFromQueue(OrderQueue* p_queue, int floor);
+
+// Constructor for the OrderQueue struct
+OrderQueue createQueue();
