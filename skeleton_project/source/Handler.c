@@ -38,18 +38,21 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
     }
 }
 
-int main()
-{
-    printf("Testing:\n\n");
-    Elevator heiss =  {0, 4, 0, -1};
+// int main()
+// {
+//     printf("Testing:\n\n");
+//     Elevator heiss =  {0, 4, 0, -1};
 
-    OrderQueue navn = createQueue();
-    addToQueue(&navn, 4);
-    addToQueue(&navn, 1);
-    addToQueue(&navn, 2);
-    addToQueue(&navn, 3);
-    printQueue(&navn);
-    sortQueue(&navn, &heiss);
-    printQueue(&navn);
-    return 0;
-}
+//     OrderQueue navn = createQueue();
+//     addToQueue(&navn, 4);
+//     addToQueue(&navn, 1);
+//     addToQueue(&navn, 2);
+//     addToQueue(&navn, 3);
+//     printQueue(&navn);
+//     sortQueue(&navn, &heiss);
+//     printQueue(&navn);
+
+     
+    
+//     return 0;
+// }
