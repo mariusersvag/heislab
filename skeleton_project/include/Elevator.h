@@ -1,26 +1,27 @@
 #pragma once
 
 #include <stdbool.h>
-#include "OrderQueue.h"
-#include "driver/elevio.h"
+#include "../include/OrderQueue.h"
+#include "../source/driver/elevio.h"
 
 typedef struct {
     int current_floor;
+    int previous_floor;
     bool door_open;
     MotorDirection motor_dir;
 } Elevator;
 
 
-void stop();
-void arrived();
-void moveTo(int floor);
+void stop(Elevator* p_elevator);
+void arrived(Elevator* p_elevator);
+void moveTo(Elevator* p_elevator, int floor);
 
-void openDoor();
-void closeDoor();
+void openDoor(Elevator* p_elevator);
+void closeDoor(Elevator* p_elevator);
 
-void updateCurrentFloor();
-void setMotorDir(MotorDirection dir);
+void updateCurrentFloor(Elevator* p_elevator);
+void setMotorDir(Elevator* p_elevator, MotorDirection dir);
 
-void emergencyStop();
-void handleObstruction();
+void emergencyStop(Elevator* p_elevator);
+void handleObstruction(Elevator* p_elevator);
 
