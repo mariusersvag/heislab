@@ -1,5 +1,6 @@
 #include <time.h>
 #include "../include/Elevator.h"
+#include "Elevator.h"
 
 void stop(Elevator *p_elevator)
 {
@@ -7,6 +8,11 @@ void stop(Elevator *p_elevator)
     elevio_stopLamp(1);
 }
 
+Elevator createElevator()
+{   
+    Elevator elev;
+    return elev;
+}
 
 
 void arrived(Elevator *p_elevator) 
@@ -24,6 +30,9 @@ void moveTo(Elevator *p_elevator, int floor)
     }
     else {
         setMotorDir(p_elevator, DIRN_UP);
+
+    
+    
     }
 }
 
@@ -77,3 +86,5 @@ void handleObstruction(Elevator *p_elevator)
     sleep(3);
     closeDoor(p_elevator);
 }
+
+

@@ -12,6 +12,7 @@ typedef struct {
     MotorDirection motor_dir;
 } Elevator;
 
+Elevator createElevator();
 
 void stop(Elevator* p_elevator);
 void arrived(Elevator* p_elevator);

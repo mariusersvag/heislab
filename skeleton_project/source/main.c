@@ -7,23 +7,41 @@
 
 
 int main(){
+    
     elevio_init();
     
-    printf("=== Example Program ===\n");
-    printf("Press the stop button on the elevator panel to exit\n");
-
     elevio_motorDirection(DIRN_STOP);
 
-    while(1){
+    Handler handler;
+    handler.go = true;
 
-        elevio_floorIndicator(2);
-        sleep(3);    
-    
-        elevio_floorIndicator(3);
-        sleep(3);    
+    OrderQueue q = createQueue();
+    Elevator elevator = createElevator();
+
+    while(handler.go){
+         
+        if (q.queue[0].floor != -1) 
+
+
         
-        elevio_floorIndicator(1);
-        sleep(3);  
+
+
+
+
+
+        
+
+
+
+
+        // elevio_floorIndicator(2);
+        // sleep(3);    
+    
+        // elevio_floorIndicator(3);
+        // sleep(3);    
+        
+        // elevio_floorIndicator(1);
+        // sleep(3);  
 
 
         // int floor = elevio_floorSensor();
