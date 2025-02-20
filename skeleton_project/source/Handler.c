@@ -2,6 +2,8 @@
 
 void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 {
+    
+    
     for (int i = 0; i < QUEUESIZE; i++)
     {
         for (int j = 0; j < QUEUESIZE - i - 1; j++)
@@ -19,7 +21,8 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 
 
             bool swap = elevator_is_going_up && !queue_jp1_bgt_queue_j1 && queue_jp1_bgt_prev_floor;
-            swap |= !elevator_is_going_up && queue_jp1_bgt_prev_floor && !queue_jp1_bgt_prev_floor;
+            swap |= !elevator_is_going_up && queue_jp1_bgt_queue_j1 && !queue_jp1_bgt_prev_floor;
+
             swap |= elevator_is_going_up && queue_jp1_bgt_queue_j1 && queue_j_ble_prev_floor;
             swap |= !elevator_is_going_up && !queue_jp1_bgt_queue_j1 && queue_j_bge_prev_floor;
 
@@ -33,4 +36,20 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
            
         }
     }
+}
+
+int main()
+{
+    printf("Testing:\n\n");
+    Elevator heiss =  {0, 4, 0, -1};
+
+    OrderQueue navn = createQueue();
+    addToQueue(&navn, 4);
+    addToQueue(&navn, 1);
+    addToQueue(&navn, 2);
+    addToQueue(&navn, 3);
+    printQueue(&navn);
+    sortQueue(&navn, &heiss);
+    printQueue(&navn);
+    return 0;
 }

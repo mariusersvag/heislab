@@ -1,3 +1,4 @@
+#include "../include/OrderQueue.h"
 #include "OrderQueue.h"
 
 void clearQueue(OrderQueue* p_queue)
@@ -32,9 +33,20 @@ void removeFromQueue(OrderQueue* p_queue, int floor)
     }
 }
 
+void printQueue(OrderQueue *p_queue)
+{
+    printf("Queue: [");
+    for (int i = 0; i < QUEUESIZE; i++){
+        printf("%i, ", p_queue->queue[i]);
+    }
+    printf("]\n");
+}
+
+
+
 OrderQueue createQueue()
 {
     OrderQueue queue;
-    clear_queue(queue.queue);
+    clearQueue(&queue);
     return queue;
 }

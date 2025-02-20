@@ -1,4 +1,4 @@
-#include "Elevator.h"
+#include "../include/Elevator.h"
 
 void openDoor(Elevator *p_elevator)
 {
@@ -19,6 +19,7 @@ void updateCurrentFloor(Elevator *p_elevator)
 
 void setMotorDir(Elevator *p_elevator, MotorDirection dir)
 {
+    elevio_motorDirection(dir);
     p_elevator->motor_dir = dir;
 }
 
