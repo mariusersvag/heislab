@@ -19,7 +19,7 @@ void addToQueue(OrderQueue* p_queue, QueueEntry entry)
             if (p_queue->queue[i].floor == -1)
             {
                 p_queue->queue[i] = entry;
-                break;
+                continue;
             }   
         
         } else if (entry.dir == BUTTON_CAB) break;
@@ -27,7 +27,7 @@ void addToQueue(OrderQueue* p_queue, QueueEntry entry)
         else if (p_queue->queue[i].dir == BUTTON_CAB)
         {
             p_queue->queue[i].dir = entry.dir;
-            break;
+            continue;
         }
     }
 }
