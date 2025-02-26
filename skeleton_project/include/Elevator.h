@@ -9,10 +9,12 @@ typedef struct {
     int current_floor;
     int previous_floor;
     bool door_open;
+    bool has_arrived;
     MotorDirection motor_dir;
 } Elevator;
 
 Elevator createElevator();
+void initElevator(Elevator* p_elevator);
 
 void stop(Elevator* p_elevator);
 void moveTo(Elevator* p_elevator, int floor);
