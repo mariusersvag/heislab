@@ -17,9 +17,9 @@ void addToQueue(OrderQueue* p_queue, QueueEntry entry)
     {
         int queue_floor = p_queue->queue[i].floor;
 
-
-        //Dersom floor allerede er i køen, forkast forespørsel men endre dir?
-        if (queue_floor == entry.floor) 
+        //Dersom floor allerede er i køen, forkast forespørsel men endre dir
+        //Muligens logisk feil idk
+        if ((queue_floor == entry.floor) || p_queue->queue[i].dir == BUTTON_CAB) 
         {
             p_queue->queue[i].dir = entry.dir;
             return;
@@ -31,25 +31,25 @@ void addToQueue(OrderQueue* p_queue, QueueEntry entry)
             p_queue->queue[i] = entry;
             return;  
         } 
-
-
-        // //Fra den gamle koden
-        // if (p_queue->queue[i].dir == BUTTON_CAB) 
-        // {
-        //     p_queue->queue[i].dir = entry.dir;
-        // }
-
-        // //LOL
-
-
-        // if (p_queue->queue[i].dir == BUTTON_CAB)
-        // {
-        //     p_queue->queue[i].dir = entry.dir;
-        //     continue;
-        // }
-
     }
 }
+
+//      ^
+// //Fra den gamle koden
+// if (p_queue->queue[i].dir == BUTTON_CAB) 
+// {
+//     p_queue->queue[i].dir = entry.dir;
+// }
+
+// //LOL
+
+
+// if (p_queue->queue[i].dir == BUTTON_CAB)
+// {
+//     p_queue->queue[i].dir = entry.dir;
+//     continue;
+// }
+
 
 void removeFromQueue(OrderQueue* p_queue, int floor)
 {
@@ -81,7 +81,7 @@ void removeFromQueue(OrderQueue* p_queue, int floor)
 
 void printQueue(OrderQueue *p_queue)
 {
-    static OrderQueue last_queue; // Store the last printed queue
+    static OrderQueue last_queue; // Forrige kø
 
     int isQueueDifferent = 0;
     for (int i = 0; i < QUEUESIZE; i++) {
@@ -103,14 +103,6 @@ void printQueue(OrderQueue *p_queue)
             last_queue.queue[i] = p_queue->queue[i];
         }
     }
-
-    // static OrderQueue last_queue;
-    // printf("Queue: [");
-    // for (int i = 0; i < QUEUESIZE; i++)
-    // {
-    //     printf("%i, ", p_queue->queue[i]);
-    // }
-    // printf("]\n");
 }
 
 OrderQueue createQueue()

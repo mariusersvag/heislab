@@ -53,22 +53,18 @@ int main(){
         if (elevator.has_arrived)
         {   
             printf("ELEVATOR : arrived at floor %i\n", elevator.current_floor);
-
             removeFromQueue(&q, elevator.current_floor);
             // sortQueue(&q, &elevator);
-
             // sleep(3);
             openDoor(&elevator);
             sleep(1);
             closeDoor(&elevator);
             // sleep(3);
-
             elevator.has_arrived = false;
-        }
-        
-        //20ms loop delay
-        // nanosleep(&(struct timespec){0, 10*1000*1000}, NULL);        
+        } 
     }
-
     return 0;
 }
+
+//20ms loop delay
+// nanosleep(&(struct timespec){0, 10*1000*1000}, NULL);        

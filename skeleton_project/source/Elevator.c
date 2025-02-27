@@ -48,8 +48,8 @@ void initElevator(Elevator* p_elevator)
 
 void moveTo(Elevator *p_elevator, int floor)
 {   
+    //Floor lights
     int floor_sensor = elevio_floorSensor();
-
     if (floor_sensor != -1) 
     {
         elevio_floorIndicator(floor_sensor);
@@ -61,9 +61,8 @@ void moveTo(Elevator *p_elevator, int floor)
         //Update floors
         p_elevator->previous_floor = p_elevator->current_floor;
         p_elevator->current_floor = floor;
-
         setMotorDir(p_elevator, DIRN_STOP);
-        p_elevator -> has_arrived = true;
+        p_elevator->has_arrived = true;
         return;
     }
 
@@ -111,7 +110,7 @@ void closeDoor(Elevator *p_elevator)
 //DELETE
 void handleObstruction(Elevator *p_elevator)
 {   
-    printf("Not in use\n");
+    int ikke_i_bruk = 2;
 }
 
 
