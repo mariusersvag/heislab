@@ -35,7 +35,7 @@ int main(){
         }
         
         processRequests(&q, &elevator);
-        sortQueue(&q, &elevator);
+        printQueue(&q);
 
         //Dersom ikke tom kø
         if (q.queue[0].floor != -1) 
@@ -49,27 +49,25 @@ int main(){
                 setMotorDir(&elevator, DIRN_STOP);
             }
         }
-
+        
         if (elevator.has_arrived)
-        {
-            printf("\nELEVATOR : arrived at floor %i\n", elevator.current_floor);
-            elevio_floorIndicator(elevator.current_floor - 1);
+        {   
+            printf("ELEVATOR : arrived at floor %i\n", elevator.current_floor);
+
             removeFromQueue(&q, elevator.current_floor);
-            sleep(3);
+            // sortQueue(&q, &elevator);
 
+            // sleep(3);
             openDoor(&elevator);
-            printf("\nELEVATOR : door is open\n");
-            sleep(3);
-
+            sleep(1);
             closeDoor(&elevator);
-            printf("\nELEVATOR : door is closed\n");
-            sleep(3);
+            // sleep(3);
 
             elevator.has_arrived = false;
         }
         
         //20ms loop delay
-        nanosleep(&(struct timespec){0, 20*1000*1000}, NULL);        
+        // nanosleep(&(struct timespec){0, 10*1000*1000}, NULL);        
     }
 
     return 0;

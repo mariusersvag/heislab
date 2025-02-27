@@ -11,52 +11,52 @@ void stop(Elevator *p_elevator)
 
 Elevator createElevator()
 {   
-    int c_f = elevio_floorSensor();    
-    int p_f;
-    if (c_f == 1) p_f = 2;
-    else if (c_f == 2) p_f = 1;
-    else if (c_f == 3) p_f = 2;
-    else if (c_f == 4) p_f = 3;
-
-    Elevator elev = {c_f, p_f, 0, 0, DIRN_STOP};
+    Elevator elev = {1, 1, 0, 0, DIRN_STOP};
     return elev;
 }
 
 void initElevator(Elevator* p_elevator)
 {
-    setMotorDir(p_elevator, DIRN_UP);
-    //Go up until it hits a floor
-    while( (elevio_floorSensor() != -1) && (!elevio_stopButton()) )
-    {
-        nanosleep(&(struct timespec){0, 20*1000*1000}, NULL);
-    }
-    setMotorDir(p_elevator, DIRN_STOP);
+    // setMotorDir(p_elevator, DIRN_UP);
+    // //Go up until it hits a floor
+    // while( (elevio_floorSensor() != -1) && (!elevio_stopButton()) )
+    // {
+    //     nanosleep(&(struct timespec){0, 20*1000*1000}, NULL);
+    // }
+    // setMotorDir(p_elevator, DIRN_STOP);
 
     p_elevator->current_floor = elevio_floorSensor();
     elevio_floorIndicator(p_elevator->current_floor);
     elevio_doorOpenLamp(p_elevator->door_open);
 
     //Edge cases (1 and 4)
-    if (p_elevator->current_floor == 1) 
+    if (p_elevator->current_floor == 0) 
+    {
+        p_elevator->previous_floor = 1;
+    }
+    else if (p_elevator->current_floor == 3)
     {
         p_elevator->previous_floor = 2;
-    }
-    else if (p_elevator->current_floor == 4)
-    {
-        p_elevator->previous_floor = 3;
     }
     else 
     {
         p_elevator->previous_floor = (p_elevator->current_floor - 1);
     }
+    printf("ELEVATOR -> INIT : cf, pf = {%i, %i}\n", p_elevator->current_floor, p_elevator->previous_floor);
     return;
 }
 
 void moveTo(Elevator *p_elevator, int floor)
-{
+{   
+    int floor_sensor = elevio_floorSensor();
+
+    if (floor_sensor != -1) 
+    {
+        elevio_floorIndicator(floor_sensor);
+    }
 
     //Arrived
-    if (elevio_floorSensor() == floor) 
+    if (floor_sensor == floor) 
     {
         //Update floors
         p_elevator->previous_floor = p_elevator->current_floor;
@@ -64,7 +64,6 @@ void moveTo(Elevator *p_elevator, int floor)
 
         setMotorDir(p_elevator, DIRN_STOP);
         p_elevator -> has_arrived = true;
-        sleep(3);
         return;
     }
 
@@ -88,6 +87,7 @@ void openDoor(Elevator *p_elevator)
         elevio_doorOpenLamp(1);
         p_elevator->door_open = true;
     }
+    printf("ELEVATOR -> DOOR : door is OPEN\n");
 }
 
 
@@ -97,17 +97,21 @@ void closeDoor(Elevator *p_elevator)
     while (elevio_obstruction()) 
     {
         sleep(3);
+        printf("ELEVATOR -> DOOR : obs!\n");
     }
 
     elevio_doorOpenLamp(0);
     p_elevator->door_open = false;
+
+    printf("ELEVATOR -> DOOR : door is CLOSED\n\n");
+
 }
 
 
 //DELETE
 void handleObstruction(Elevator *p_elevator)
 {   
-    printf("\nNot in use\n");
+    printf("Not in use\n");
 }
 
 

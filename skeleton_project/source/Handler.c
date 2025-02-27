@@ -1,6 +1,7 @@
 #include "../include/Handler.h"
 
 
+
 void arrived(OrderQueue* p_queue, Elevator *p_elevator) 
 {
     //Zero indexed lights
@@ -26,9 +27,10 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
             }
             bool queue_jp1_bgt_queue_j1 = p_queue->queue[j].floor < p_queue->queue[j + 1].floor;
             bool elevator_is_going_up = p_elevator->motor_dir == DIRN_UP;
-            bool queue_jp1_bgt_prev_floor = p_queue->queue[j + 1].floor > p_elevator->previous_floor;
+            bool queue_jp1_bgt_prev_floor = p_queue->queue[j + 1].floor > p_elevator->previous_floor + 1;
             bool queue_j_bge_prev_floor = p_queue->queue[j].floor >= p_elevator->previous_floor;
             bool queue_j_ble_prev_floor = p_queue->queue[j].floor <= p_elevator->previous_floor;
+
             bool jp1_right_direction = !(elevator_is_going_up ^ (p_queue->queue[j + 1].dir == BUTTON_HALL_UP)) || p_queue->queue[j + 1].dir == BUTTON_CAB; 
 
             //Elevator is going up
@@ -56,11 +58,15 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 void processRequests(OrderQueue* p_queue, Elevator* p_elevator)
 {
     for (int etasje = 0; etasje < N_FLOORS; etasje++){
+
         for (ButtonType buttontype = 0; buttontype < N_BUTTONS; buttontype++) {
+            
             if (elevio_callButton(etasje, buttontype)){
                 QueueEntry entry = {etasje, buttontype};
                 addToQueue(p_queue, entry);
             }
+
+            sortQueue(p_queue, p_elevator);
         }
     }
 } 
