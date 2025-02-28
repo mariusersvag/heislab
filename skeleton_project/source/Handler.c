@@ -55,17 +55,93 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
     }
 }
 
+
+void sortQueue2(OrderQueue* queue, Elevator* elev) 
+{
+    int elev_up = elev->motor_dir == DIRN_UP;
+    int this_floor = elev->current_floor;
+    int prev_floor = elev->previous_floor;
+
+    for (int i = 0; i < QUEUESIZE; i++) 
+    {
+        for (int j = 0; j < QUEUESIZE - i - 1; j++) 
+        {
+            bool valid_index = queue->queue[j].floor != -1 && queue->queue[j + 1].floor != -1;
+            if (!valid_index) 
+            {
+                break;
+            }
+
+            bool swap = false;
+
+            if (elev_up) 
+            {
+                // Prioritize CAB first, then hall up, then hall down
+                if (queue->queue[j].dir == BUTTON_CAB && queue->queue[j + 1].dir != BUTTON_CAB) 
+                {
+                    swap = false;
+                } 
+                else if (queue->queue[j].dir != BUTTON_CAB && queue->queue[j + 1].dir == BUTTON_CAB) 
+                {
+                    swap = true;
+                } 
+                else if (queue->queue[j].dir == BUTTON_HALL_UP && queue->queue[j + 1].dir == BUTTON_HALL_DOWN) 
+                {
+                    swap = false;
+                } 
+                else if (queue->queue[j].dir == BUTTON_HALL_DOWN && queue->queue[j + 1].dir == BUTTON_HALL_UP) 
+                {
+                    swap = true;
+                } 
+                else 
+                {
+                    swap = queue->queue[j].floor > queue->queue[j + 1].floor;
+                }
+            } 
+            else 
+            {
+                // Prioritize CAB first, then hall down, then hall up
+                if (queue->queue[j].dir == BUTTON_CAB && queue->queue[j + 1].dir != BUTTON_CAB) 
+                {
+                    swap = false;
+                } 
+                else if (queue->queue[j].dir != BUTTON_CAB && queue->queue[j + 1].dir == BUTTON_CAB) 
+                {
+                    swap = true;
+                } 
+                else if (queue->queue[j].dir == BUTTON_HALL_DOWN && queue->queue[j + 1].dir == BUTTON_HALL_UP) 
+                {
+                    swap = false;
+                } 
+                else if (queue->queue[j].dir == BUTTON_HALL_UP && queue->queue[j + 1].dir == BUTTON_HALL_DOWN) 
+                {
+                    swap = true;
+                } 
+                else 
+                {
+                    swap = queue->queue[j].floor < queue->queue[j + 1].floor;
+                }
+            }
+
+            if (swap) 
+            {
+                QueueEntry temp = queue->queue[j];
+                queue->queue[j] = queue->queue[j + 1];
+                queue->queue[j + 1] = temp;
+            }
+        }
+    }
+}
+
 void processRequests(OrderQueue* p_queue, Elevator* p_elevator)
 {
     for (int etasje = 0; etasje < N_FLOORS; etasje++){
-
         for (ButtonType buttontype = 0; buttontype < N_BUTTONS; buttontype++) {
             
             if (elevio_callButton(etasje, buttontype)){
                 QueueEntry entry = {etasje, buttontype};
                 addToQueue(p_queue, entry);
             }
-
             sortQueue(p_queue, p_elevator);
         }
     }

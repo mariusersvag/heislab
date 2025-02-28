@@ -17,14 +17,6 @@ Elevator createElevator()
 
 void initElevator(Elevator* p_elevator)
 {
-    // setMotorDir(p_elevator, DIRN_UP);
-    // //Go up until it hits a floor
-    // while( (elevio_floorSensor() != -1) && (!elevio_stopButton()) )
-    // {
-    //     nanosleep(&(struct timespec){0, 20*1000*1000}, NULL);
-    // }
-    // setMotorDir(p_elevator, DIRN_STOP);
-
     p_elevator->current_floor = elevio_floorSensor();
     elevio_floorIndicator(p_elevator->current_floor);
     elevio_doorOpenLamp(p_elevator->door_open);

@@ -16,7 +16,10 @@ void run();
 
 
 void arrived(OrderQueue* p_queue, Elevator *p_elevator);
+
 void sortQueue(OrderQueue* p_queue, Elevator* p_elevator);
+void sortQueue2(OrderQueue* queue, Elevator* elev);
+
 void processRequests(OrderQueue* p_queue, Elevator* p_elevator);
 
 
