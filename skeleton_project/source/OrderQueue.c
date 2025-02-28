@@ -15,40 +15,56 @@ void addToQueue(OrderQueue* p_queue, QueueEntry entry)
 
     for (int i = 0; i < QUEUESIZE; i++)
     {
-        int queue_floor = p_queue->queue[i].floor;
+        int q_floor = p_queue->queue[i].floor;
+        int q_dir = p_queue->queue[i].dir;
 
-        //Dersom floor allerede er i køen, forkast forespørsel men endre dir
-        //Muligens logisk feil idk
-        if ((queue_floor == entry.floor) || p_queue->queue[i].dir == BUTTON_CAB) 
+        //Dersom floor er i Queue
+        if ((q_floor == entry.floor)) 
         {
-            p_queue->queue[i].dir = entry.dir;
-            return;
-        };
+            // if (q_dir == BUTTON_CAB) 
+            // {
+            //     p_queue->queue[i].dir = entry.dir;
+            //     return;
+            // }
+
+            //Dersom entry er i Queue
+            if (q_dir = entry.dir) return;
+        }
 
         //Setter inn i frammerste -1 verdi
-        if (queue_floor == -1)
+        if (q_floor == -1)
         {
-            p_queue->queue[i] = entry;
+            p_queue->queue[i] = entry; 
             return;  
         } 
     }
+
+
+    /*
+    for (int i = 0; i < QUEUESIZE; i++)
+    {
+        if (p_queue->queue[i].floor != entry.floor)
+        {
+            if (p_queue->queue[i].floor == -1)
+            {
+                p_queue->queue[i] = entry;
+                return;
+            }   
+        
+        } 
+        
+        else if (p_queue->queue[i].dir == BUTTON_CAB)
+        {
+            p_queue->queue[i].dir = entry.dir;
+            return;
+        }
+
+        else if (entry.dir == BUTTON_CAB) return;
+
+        return;
+    }   
+    */
 }
-
-//      ^
-// //Fra den gamle koden
-// if (p_queue->queue[i].dir == BUTTON_CAB) 
-// {
-//     p_queue->queue[i].dir = entry.dir;
-// }
-
-// //LOL
-
-
-// if (p_queue->queue[i].dir == BUTTON_CAB)
-// {
-//     p_queue->queue[i].dir = entry.dir;
-//     continue;
-// }
 
 
 void removeFromQueue(OrderQueue* p_queue, int floor)

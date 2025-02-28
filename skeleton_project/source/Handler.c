@@ -59,8 +59,6 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 void sortQueue2(OrderQueue* queue, Elevator* elev) 
 {
     int elev_up = elev->motor_dir == DIRN_UP;
-    int this_floor = elev->current_floor;
-    int prev_floor = elev->previous_floor;
 
     for (int i = 0; i < QUEUESIZE; i++) 
     {
@@ -138,11 +136,17 @@ void processRequests(OrderQueue* p_queue, Elevator* p_elevator)
     for (int etasje = 0; etasje < N_FLOORS; etasje++){
         for (ButtonType buttontype = 0; buttontype < N_BUTTONS; buttontype++) {
             
-            if (elevio_callButton(etasje, buttontype)){
-                QueueEntry entry = {etasje, buttontype};
-                addToQueue(p_queue, entry);
+            if (elevio_callButton(etasje, buttontype))
+            {
+                int exist = 0;
+                for (int i = 0; i < QUEUESIZE; i++) if (p_queue->queue[i].floor == etasje) exist = 1;
+                if (!exist) 
+                {
+                    QueueEntry entry = {etasje, buttontype};
+                    addToQueue(p_queue, entry);
+                }
             }
-            sortQueue(p_queue, p_elevator);
+            sortQueue2(p_queue, p_elevator);
         }
     }
 } 
