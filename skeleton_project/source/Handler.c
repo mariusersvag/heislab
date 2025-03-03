@@ -28,6 +28,7 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
                 }
                 bool queue_jp1_bgt_queue_j1 = p_queue->queue[j].floor < p_queue->queue[j + 1].floor;
                 bool elevator_is_going_up = p_elevator->motor_dir == DIRN_UP;
+                bool elevator_is_going_down = p_elevator->motor_dir == DIRN_DOWN;
                 bool queue_jp1_bgt_prev_floor = p_queue->queue[j + 1].floor > p_elevator->previous_floor + 1;
                 bool queue_j_bge_prev_floor = p_queue->queue[j].floor >= p_elevator->previous_floor;
                 bool queue_j_ble_prev_floor = p_queue->queue[j].floor <= p_elevator->previous_floor;
@@ -41,10 +42,10 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
                 swap |= elevator_is_going_up && queue_jp1_bgt_queue_j1 && queue_j_ble_prev_floor;
                 
                 //Elevator is going down
-                swap |= !elevator_is_going_up && queue_jp1_bgt_queue_j1 && !queue_jp1_bgt_prev_floor;
-                swap |= !elevator_is_going_up && !queue_jp1_bgt_queue_j1 && queue_j_bge_prev_floor;
+                swap |= elevator_is_going_down && queue_jp1_bgt_queue_j1 && !queue_jp1_bgt_prev_floor;
+                swap |= elevator_is_going_down && !queue_jp1_bgt_queue_j1 && queue_j_bge_prev_floor;
 
-                swap |= jp1_right_direction;
+                swap &= jp1_right_direction;
 
                 //heihei
                 if (swap)
