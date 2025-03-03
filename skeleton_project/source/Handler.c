@@ -46,7 +46,7 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 
                 swap |= jp1_right_direction;
 
-
+                //heihei
                 if (swap)
                 {
                     int temp = p_queue->queue[j].floor;
