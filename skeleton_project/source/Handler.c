@@ -15,42 +15,46 @@ void arrived(OrderQueue* p_queue, Elevator *p_elevator)
 
 void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 {
-    
     for (int i = 0; i < QUEUESIZE; i++)
     {
-        for (int j = 0; j < QUEUESIZE - i - 1; j++)
+        for (int i = 0; i < QUEUESIZE; i++)
         {
-            bool valid_index = p_queue->queue[j].floor != -1 && p_queue->queue[j + 1].floor != -1;
-            if(!valid_index)
+            for (int j = 0; j < QUEUESIZE - i - 1; j++)
             {
-                break;
-            }
-            bool queue_jp1_bgt_queue_j1 = p_queue->queue[j].floor < p_queue->queue[j + 1].floor;
-            bool elevator_is_going_up = p_elevator->motor_dir == DIRN_UP;
-            bool queue_jp1_bgt_prev_floor = p_queue->queue[j + 1].floor > p_elevator->previous_floor + 1;
-            bool queue_j_bge_prev_floor = p_queue->queue[j].floor >= p_elevator->previous_floor;
-            bool queue_j_ble_prev_floor = p_queue->queue[j].floor <= p_elevator->previous_floor;
+                bool valid_index = p_queue->queue[j].floor != -1 && p_queue->queue[j + 1].floor != -1;
+                if(!valid_index)
+                {
+                    break;
+                }
+                bool queue_jp1_bgt_queue_j1 = p_queue->queue[j].floor < p_queue->queue[j + 1].floor;
+                bool elevator_is_going_up = p_elevator->motor_dir == DIRN_UP;
+                bool queue_jp1_bgt_prev_floor = p_queue->queue[j + 1].floor > p_elevator->previous_floor + 1;
+                bool queue_j_bge_prev_floor = p_queue->queue[j].floor >= p_elevator->previous_floor;
+                bool queue_j_ble_prev_floor = p_queue->queue[j].floor <= p_elevator->previous_floor;
 
-            bool jp1_right_direction = !(elevator_is_going_up ^ (p_queue->queue[j + 1].dir == BUTTON_HALL_UP)) || p_queue->queue[j + 1].dir == BUTTON_CAB; 
+                bool jp1_right_direction = elevator_is_going_up && (p_queue->queue[j + 1].dir == BUTTON_HALL_UP);
+                jp1_right_direction |= !elevator_is_going_up && (p_queue->queue[j + 1].dir == BUTTON_HALL_DOWN);
+                jp1_right_direction |= p_queue->queue[j + 1].dir == BUTTON_CAB; 
 
-            //Elevator is going up
-            bool swap = elevator_is_going_up && !queue_jp1_bgt_queue_j1 && queue_jp1_bgt_prev_floor;
-            swap |= elevator_is_going_up && queue_jp1_bgt_queue_j1 && queue_j_ble_prev_floor;
+                //Elevator is going up
+                bool swap = elevator_is_going_up && !queue_jp1_bgt_queue_j1 && queue_jp1_bgt_prev_floor;
+                swap |= elevator_is_going_up && queue_jp1_bgt_queue_j1 && queue_j_ble_prev_floor;
+                
+                //Elevator is going down
+                swap |= !elevator_is_going_up && queue_jp1_bgt_queue_j1 && !queue_jp1_bgt_prev_floor;
+                swap |= !elevator_is_going_up && !queue_jp1_bgt_queue_j1 && queue_j_bge_prev_floor;
+
+                swap |= jp1_right_direction;
+
+
+                if (swap)
+                {
+                    int temp = p_queue->queue[j].floor;
+                    p_queue->queue[j] = p_queue->queue[j + 1];
+                    p_queue->queue[j + 1].floor = temp;
+                }
             
-            //Elevator is going down
-            swap |= !elevator_is_going_up && queue_jp1_bgt_queue_j1 && !queue_jp1_bgt_prev_floor;
-            swap |= !elevator_is_going_up && !queue_jp1_bgt_queue_j1 && queue_j_bge_prev_floor;
-
-            swap |= jp1_right_direction;
-
-
-            if (swap)
-            {
-                int temp = p_queue->queue[j].floor;
-                p_queue->queue[j] = p_queue->queue[j + 1];
-                p_queue->queue[j + 1].floor = temp;
             }
-           
         }
     }
 }
@@ -58,7 +62,7 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 
 void sortQueue2(OrderQueue* queue, Elevator* elev) 
 {
-    int elev_up = elev->motor_dir == DIRN_UP;
+    bool elev_up = elev->motor_dir == DIRN_UP;
 
     for (int i = 0; i < QUEUESIZE; i++) 
     {
@@ -133,20 +137,24 @@ void sortQueue2(OrderQueue* queue, Elevator* elev)
 
 void processRequests(OrderQueue* p_queue, Elevator* p_elevator)
 {
+    // sortQueue(p_queue, p_elevator);
     for (int etasje = 0; etasje < N_FLOORS; etasje++){
         for (ButtonType buttontype = 0; buttontype < N_BUTTONS; buttontype++) {
             
             if (elevio_callButton(etasje, buttontype))
             {
                 int exist = 0;
-                for (int i = 0; i < QUEUESIZE; i++) if (p_queue->queue[i].floor == etasje) exist = 1;
+                for (int i = 0; i < QUEUESIZE; i++) if (p_queue->queue[i].floor == etasje)
+                {exist = 1;
+                // sortQueue(p_queue, p_elevator);
+                }  
                 if (!exist) 
                 {
                     QueueEntry entry = {etasje, buttontype};
                     addToQueue(p_queue, entry);
+                    sortQueue(p_queue, p_elevator);
                 }
             }
-            sortQueue2(p_queue, p_elevator);
         }
     }
 } 

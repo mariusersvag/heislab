@@ -27,6 +27,7 @@ int main(){
 
     //Main loop
     while(handler.go){
+        
 
         if(elevio_stopButton())
         {

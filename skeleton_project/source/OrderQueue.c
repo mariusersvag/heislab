@@ -28,7 +28,16 @@ void addToQueue(OrderQueue* p_queue, QueueEntry entry)
             // }
 
             //Dersom entry er i Queue
-            if (q_dir = entry.dir) return;
+            if (entry.dir == BUTTON_CAB) {
+                p_queue->queue[i].dir = BUTTON_CAB;
+                return;
+            }
+            else if (q_dir == BUTTON_CAB) return;
+            else if (q_dir == entry.dir) return;
+            else {
+                p_queue->queue[i].dir = BUTTON_CAB; //BUTTON_CAB means dont care in this context
+                return;
+            }
         }
 
         //Setter inn i frammerste -1 verdi
