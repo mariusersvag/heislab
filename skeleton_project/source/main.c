@@ -34,7 +34,7 @@ int main(){
     while(handler.go){
 
         // printf("timer: %i\n", timer);
-
+        sortQueue(&q, &elevator);
         if(elevio_stopButton())
         {
             emergencyStop(&elevator);

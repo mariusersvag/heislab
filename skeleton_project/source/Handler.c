@@ -17,46 +17,66 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 {
     for (int i = 0; i < QUEUESIZE; i++)
     {
-        for (int i = 0; i < QUEUESIZE; i++)
+        for (int j = 0; j < QUEUESIZE - i - 1; j++)
         {
-            for (int j = 0; j < QUEUESIZE - i - 1; j++)
-            {
-                bool valid_index = p_queue->queue[j].floor != -1 && p_queue->queue[j + 1].floor != -1;
-                if(!valid_index)
-                {
-                    break;
-                }
-                bool queue_jp1_bgt_queue_j1 = p_queue->queue[j].floor < p_queue->queue[j + 1].floor;
-                bool elevator_is_going_up = p_elevator->motor_dir == DIRN_UP;
-                bool elevator_is_going_down = p_elevator->motor_dir == DIRN_DOWN;
-                bool queue_jp1_bgt_prev_floor = p_queue->queue[j + 1].floor > p_elevator->previous_floor + 1;
-                bool queue_j_bge_prev_floor = p_queue->queue[j].floor >= p_elevator->previous_floor;
-                bool queue_j_ble_prev_floor = p_queue->queue[j].floor <= p_elevator->previous_floor;
+            bool right_direction = p_elevator->motor_dir == DIRN_UP && p_queue->queue[j+1].dir == BUTTON_HALL_UP;
+            right_direction = right_direction || (p_elevator->motor_dir == DIRN_DOWN && p_queue->queue[j+1].dir == BUTTON_HALL_DOWN);
+            right_direction = right_direction || (p_queue->queue[j+1].dir == BUTTON_CAB);
 
-                bool jp1_right_direction = elevator_is_going_up && (p_queue->queue[j + 1].dir == BUTTON_HALL_UP);
-                jp1_right_direction |= !elevator_is_going_up && (p_queue->queue[j + 1].dir == BUTTON_HALL_DOWN);
-                jp1_right_direction |= p_queue->queue[j + 1].dir == BUTTON_CAB; 
-
-                //Elevator is going up
-                bool swap = elevator_is_going_up && !queue_jp1_bgt_queue_j1 && queue_jp1_bgt_prev_floor;
-                swap |= elevator_is_going_up && queue_jp1_bgt_queue_j1 && queue_j_ble_prev_floor;
-                
-                //Elevator is going down
-                swap |= elevator_is_going_down && queue_jp1_bgt_queue_j1 && !queue_jp1_bgt_prev_floor;
-                swap |= elevator_is_going_down && !queue_jp1_bgt_queue_j1 && queue_j_bge_prev_floor;
-
-                swap &= jp1_right_direction;
-
-                //heihei
-                if (swap)
-                {
-                    int temp = p_queue->queue[j].floor;
-                    p_queue->queue[j] = p_queue->queue[j + 1];
-                    p_queue->queue[j + 1].floor = temp;
-                }
-            
+            bool swap = false;
+            if (p_elevator->current_floor == 3) {
+                swap = p_queue->queue[j].floor < p_queue->queue[j + 1].floor;
             }
+            if (p_elevator->current_floor == 0) {
+                swap = p_queue->queue[j].floor > p_queue->queue[j + 1].floor;
+            }
+            if (p_elevator->current_floor == 1) {
+                if (p_elevator->motor_dir == DIRN_UP) {
+                    if (p_queue->queue[j+1].floor == 2) {
+                        swap = true;
+                    }
+                    else if (p_queue->queue[j+1].floor == 3 && p_queue->queue[j+1].floor == 0) {
+                        swap = true;
+                    }
+                    else {
+                        swap = p_queue->queue[j].floor < p_queue->queue[j + 1].floor;
+
+                    }
+                } else if (p_elevator->motor_dir == DIRN_DOWN) {
+                    if (p_queue->queue[j+1].floor == 0) {
+                        swap = true;
+                    }
+                    else if (p_queue->queue[j+1].floor == 3 && p_queue->queue[j+1].floor == 2) {
+                        swap = true;
+                    }
+                }
+            }
+            else if (p_elevator->current_floor == 2) {
+                if (p_elevator->motor_dir == DIRN_UP) {
+                    if (p_queue->queue[j+1].floor == 3) {
+                        swap = true;
+                    } else if (p_queue->queue[j].floor == 0 && p_queue->queue[j+1].floor == 1) {
+                        swap = true;
+                    }
+                    
+                } else if (p_elevator->motor_dir == DIRN_DOWN) {
+                    if (p_queue->queue[j+1].floor == 1) {
+                        swap = true;
+                    } else if (p_queue->queue[j].floor == 3 && p_queue->queue[j+1].floor == 0) {
+                        swap = true;
+                    }
+                }
+            }
+            bool valid_index = p_queue->queue[j + 1].floor != -1;
+
+            if (swap && right_direction && valid_index) {
+                int temp = p_queue->queue[j].floor;
+                p_queue->queue[j] = p_queue->queue[j + 1];
+                p_queue->queue[j + 1].floor = temp;
+            }
+        
         }
+        
     }
 }
 
