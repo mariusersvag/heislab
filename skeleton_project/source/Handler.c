@@ -152,7 +152,9 @@ void processRequests(OrderQueue* p_queue, Elevator* p_elevator)
                 if (!exist) 
                 {
                     QueueEntry entry = {etasje, buttontype};
-                    addToQueue(p_queue, entry);
+                    if (etasje != elevio_floorSensor()) {
+                        addToQueue(p_queue, entry);
+                    }    
                     sortQueue(p_queue, p_elevator);
                 }
             }
