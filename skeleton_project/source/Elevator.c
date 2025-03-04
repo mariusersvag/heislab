@@ -46,6 +46,8 @@ void elev_initElevator(Elevator* p_elevator)
 
 void elev_moveTo(Elevator *p_elevator, int floor)
 {   
+    
+
     if (floor == 0) p_elevator->direction = 1;
     if (floor == 3) p_elevator->direction = 0;
 
@@ -55,7 +57,8 @@ void elev_moveTo(Elevator *p_elevator, int floor)
 
     if (floor_sensor != -1) 
     {
-        elevio_floorIndicator(floor_sensor);
+        if (floor_sensor != p_elevator->current_floor) p_elevator->current_floor = floor_sensor;
+        elevio_floorIndicator(floor_sensor);  
     }
 
     //Arrived
@@ -71,12 +74,12 @@ void elev_moveTo(Elevator *p_elevator, int floor)
     }
 
     //UP and DOWN
-    if ((p_elevator->current_floor) >= floor)
+    if (p_elevator->current_floor > floor)
     {
         elev_setMotorDir(p_elevator, DIRN_DOWN);
         p_elevator->direction = 1;
     } 
-    else 
+    else if (p_elevator->current_floor < floor)
     {
         elev_setMotorDir(p_elevator, DIRN_UP);
         p_elevator->direction = 0;

@@ -38,8 +38,8 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
             }
             f = f - 1;
         }
-        //SET DIRECTION DOWN IF NO ENTRIES WERE FOUND
-        p_e->direction = 1;
+        //SET DIRECTION UNKNOWN IF NO ENTRIES WERE FOUND
+        p_e->direction = 2;
     } 
     else if (p_e->direction == 1) //DOWN ******************************** 1 : DIR DOWN *************************
     {
@@ -69,8 +69,8 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
             f = f + 1;
         }
 
-        //SET DIRECTION UP IF NO ENTRIES WERE FOUND
-        p_e->direction = 0;
+        //SET DIRECTION UNKNOWN IF NO ENTRIES WERE FOUND
+        p_e->direction = 2;
     }
     else //TO DETERMINE WANTED DIR ********************************** 2 : DIR UNKNOWN *********************
     {
