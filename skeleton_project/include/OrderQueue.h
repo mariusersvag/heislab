@@ -5,8 +5,6 @@
 
 #define QUEUESIZE 4
 
-
-
 typedef struct {
     int floor;
     ButtonType dir;
@@ -17,18 +15,8 @@ typedef struct {
 } OrderQueue;
 
 
-
-
-// empties the whole queue
-void clearQueue(OrderQueue* p_queue);
-
-// adds a floor to the queue
-void addToQueue(OrderQueue* p_queue, QueueEntry entry); 
-
-// removes a floor from the queue
-void removeFromQueue(OrderQueue* p_queue, int floor);
-
-void printQueue(OrderQueue* p_queue);
-
-// Constructor for the OrderQueue struct
-OrderQueue createQueue();
+void order_clearQueue(OrderQueue* p_queue);
+void order_addToQueue(OrderQueue* p_queue, QueueEntry entry); 
+void order_removeFromQueue(OrderQueue* p_queue, int floor);
+void order_printQueue(OrderQueue* p_queue);
+OrderQueue order_createQueue();

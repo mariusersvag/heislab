@@ -2,17 +2,217 @@
 
 
 
-void arrived(OrderQueue* p_queue, Elevator *p_elevator) 
+void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
 {
-    //Zero indexed lights
-    elevio_floorIndicator(p_elevator->current_floor - 1);
-    removeFromQueue(p_queue, p_elevator->current_floor);
-    sleep(3);
+    if (p_e->current_floor == 3) p_e->direction = 1;
+    if (p_e->current_floor == 0) p_e->direction = 0;
+
+    if (matrix_isEmpty(p_m)) {
+        p_e->direction = 2; 
+        return;
+    };
+
+    if (p_e->direction == 0) //UP *************************************** 0 : DIR UP ***********************
+    {   
+        //First priority loop
+        int f = p_e->current_floor + 1;
+        while (f < N_FLOORS) {
+            if (p_m->list[f].cab == 1 || p_m->list[f].hall_up == 1 )
+            {
+                QueueEntry e = {f, BUTTON_CAB};
+                p_q->queue[0] = e;
+                return;
+            }
+            f = f + 1;
+        }
+
+        //Second priority loop
+        f = N_FLOORS - 1;
+        while (f > p_e->current_floor)
+        {
+            if (p_m->list[f].hall_down == 1)
+            {
+                QueueEntry e = {f, BUTTON_CAB};
+                p_q->queue[0] = e;
+                return;
+            }
+            f = f - 1;
+        }
+        //SET DIRECTION DOWN IF NO ENTRIES WERE FOUND
+        p_e->direction = 1;
+    } 
+    else if (p_e->direction == 1) //DOWN ******************************** 1 : DIR DOWN *************************
+    {
+        //First priority loop
+        int f = p_e->current_floor - 1;
+        while (f >= 0)
+        {
+            if (p_m->list[f].cab == 1 || p_m->list[f].hall_down == 1) 
+            {
+                QueueEntry e = {f, BUTTON_CAB};
+                p_q->queue[0] = e;
+                return; 
+            }
+            f = f - 1;
+        }
+
+        //Second priority loop
+        f = 0;
+        while (f < p_e->current_floor)
+        {
+            if (p_m->list[f].hall_up == 1)
+            {
+                QueueEntry e = {f, BUTTON_CAB};
+                p_q->queue[0] = e;
+                return;
+            }
+            f = f + 1;
+        }
+
+        //SET DIRECTION UP IF NO ENTRIES WERE FOUND
+        p_e->direction = 0;
+    }
+    else //TO DETERMINE WANTED DIR ********************************** 2 : DIR UNKNOWN *********************
+    {
+        //Scan up
+        int f = p_e ->current_floor;
+        while (f < N_FLOORS) 
+        {
+            if (matrix_isCallFromFloor(p_m, f))
+            {
+                p_e->direction = 0;
+                return;
+            }
+            f = f + 1;
+        }
+
+        //Scan down
+        f = p_e->current_floor;
+        while (f > 0)
+        {
+            if (matrix_isCallFromFloor(p_m, f))
+            {
+                p_e->direction = 1;
+                return;
+            }
+            f = f - 1;
+        }
+    }
+}
+
+void handler_run_matrix()
+{
+    elevio_init();
+    elevio_motorDirection(DIRN_STOP);
+    Handler handler = {true};
+    OrderQueue q = order_createQueue();
+    Elevator elevator = elev_createElevator();
+    Matrix m = matrix_createMatrix();
+    elev_initElevator(&elevator);
+    handler_resetLamps();
+    int timer = 0;
+
+    while(handler.go){
+        
+        if(elevio_stopButton())
+        {
+            elev_emergencyStop(&elevator);
+            break;
+        }
+        
+        handler_updateMatrix(&m);
+        handler_updateQueue(&m, &q, &elevator);
+
+        matrix_printMatrix(&m);
+        order_printQueue(&q);
+
+        //Dersom ikke tom kø
+        if ((q.queue[0].floor != -1) && (timer <= 0))
+        {
+            elev_moveTo(&elevator, q.queue[0].floor);
+        } 
+        else 
+        {
+            if (elevator.motor_dir != DIRN_STOP)
+            {
+                elev_setMotorDir(&elevator, DIRN_STOP);  
+            }
+        }
+        
+        //Elevator arrived
+        if (elevator.has_arrived)
+        {   
+            handler_printArrived(elevator.current_floor);
+            order_removeFromQueue(&q, elevator.current_floor);
+            matrix_clearFloor(&m, elevator.current_floor);
+            elev_openDoor(&elevator);
+            timer += DOOR_OPEN_TIME_MS;
+            elevator.has_arrived = false;
+        } 
+        
+        //Door is ready to be closed
+        if (timer <= 0 && elevator.door_open == true) 
+        {
+            if (elevio_obstruction()) 
+            {
+                timer += DOOR_OBS_TIME_MS;
+                printf("DOOR : obs!\n\n");
+            }
+            else
+            {
+                elev_closeDoor(&elevator);
+                timer = 0;
+            } 
+        }
+
+        //Decrement timer
+        if (timer > 0) timer -= LOOP_DELAY_MS;
+        nanosleep(&(struct timespec){0, LOOP_DELAY_MS*1000*1000}, NULL);        
+    }
 }
 
 
+void handler_updateMatrix(Matrix* m) 
+{
+    for (int etasje = 0; etasje < N_FLOORS; etasje++) {
+        for (int button = 0; button < N_BUTTONS; button++) {
+            if (elevio_callButton(etasje, (ButtonType)button))
+            {
+                elevio_buttonLamp(etasje, (ButtonType)button, 1);
+                //Case for 0, 1, and 2
+                if (button == 0) {
+                    m->list[etasje].hall_up = 1;
+                }
+                else if (button == 1){
+                    m->list[etasje].hall_down = 1;
+                }
+                else {
+                    m->list[etasje].cab = 1;
+                }
+            }
+        }
+    }
+}
 
 
+void handler_resetLamps()
+{
+    for (int etasje = 0; etasje < N_FLOORS; etasje++){
+        for (ButtonType buttontype = 0; buttontype < N_BUTTONS; buttontype++) {
+            elevio_buttonLamp(etasje, buttontype, 0);       
+        }
+    }
+    elevio_stopLamp(0);
+}
+
+void handler_printArrived(int floor)
+{
+    printf("                                                                    _____\n");
+    printf("##########################################       arrived @ floor    | %i |\n", floor);
+    printf("                                                                    ¨¨¨¨¨\n");
+}
+
+//OLD
 void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
 {
     for (int i = 0; i < QUEUESIZE; i++)
@@ -22,7 +222,7 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
             bool right_direction = p_elevator->motor_dir == DIRN_UP && p_queue->queue[j+1].dir == BUTTON_HALL_UP;
             right_direction = right_direction || (p_elevator->motor_dir == DIRN_DOWN && p_queue->queue[j+1].dir == BUTTON_HALL_DOWN);
             right_direction = right_direction || (p_queue->queue[j+1].dir == BUTTON_CAB);
-
+            
             bool swap = false;
             if (p_elevator->current_floor == 3) {
                 swap = p_queue->queue[j].floor < p_queue->queue[j + 1].floor;
@@ -40,7 +240,7 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
                     }
                     else {
                         swap = p_queue->queue[j].floor < p_queue->queue[j + 1].floor;
-
+                        
                     }
                 } else if (p_elevator->motor_dir == DIRN_DOWN) {
                     if (p_queue->queue[j+1].floor == 0) {
@@ -80,82 +280,7 @@ void sortQueue(OrderQueue* p_queue, Elevator* p_elevator)
     }
 }
 
-
-void sortQueue2(OrderQueue* queue, Elevator* elev) 
-{
-    bool elev_up = elev->motor_dir == DIRN_UP;
-
-    for (int i = 0; i < QUEUESIZE; i++) 
-    {
-        for (int j = 0; j < QUEUESIZE - i - 1; j++) 
-        {
-            bool valid_index = queue->queue[j].floor != -1 && queue->queue[j + 1].floor != -1;
-            if (!valid_index) 
-            {
-                break;
-            }
-
-            bool swap = false;
-
-            if (elev_up) 
-            {
-                // Prioritize CAB first, then hall up, then hall down
-                if (queue->queue[j].dir == BUTTON_CAB && queue->queue[j + 1].dir != BUTTON_CAB) 
-                {
-                    swap = false;
-                } 
-                else if (queue->queue[j].dir != BUTTON_CAB && queue->queue[j + 1].dir == BUTTON_CAB) 
-                {
-                    swap = true;
-                } 
-                else if (queue->queue[j].dir == BUTTON_HALL_UP && queue->queue[j + 1].dir == BUTTON_HALL_DOWN) 
-                {
-                    swap = false;
-                } 
-                else if (queue->queue[j].dir == BUTTON_HALL_DOWN && queue->queue[j + 1].dir == BUTTON_HALL_UP) 
-                {
-                    swap = true;
-                } 
-                else 
-                {
-                    swap = queue->queue[j].floor > queue->queue[j + 1].floor;
-                }
-            } 
-            else 
-            {
-                // Prioritize CAB first, then hall down, then hall up
-                if (queue->queue[j].dir == BUTTON_CAB && queue->queue[j + 1].dir != BUTTON_CAB) 
-                {
-                    swap = false;
-                } 
-                else if (queue->queue[j].dir != BUTTON_CAB && queue->queue[j + 1].dir == BUTTON_CAB) 
-                {
-                    swap = true;
-                } 
-                else if (queue->queue[j].dir == BUTTON_HALL_DOWN && queue->queue[j + 1].dir == BUTTON_HALL_UP) 
-                {
-                    swap = false;
-                } 
-                else if (queue->queue[j].dir == BUTTON_HALL_UP && queue->queue[j + 1].dir == BUTTON_HALL_DOWN) 
-                {
-                    swap = true;
-                } 
-                else 
-                {
-                    swap = queue->queue[j].floor < queue->queue[j + 1].floor;
-                }
-            }
-
-            if (swap) 
-            {
-                QueueEntry temp = queue->queue[j];
-                queue->queue[j] = queue->queue[j + 1];
-                queue->queue[j + 1] = temp;
-            }
-        }
-    }
-}
-
+//OLD
 void processRequests(OrderQueue* p_queue, Elevator* p_elevator)
 {
     // sortQueue(p_queue, p_elevator);
@@ -173,7 +298,7 @@ void processRequests(OrderQueue* p_queue, Elevator* p_elevator)
                 {
                     QueueEntry entry = {etasje, buttontype};
                     if (etasje != elevio_floorSensor()) {
-                        addToQueue(p_queue, entry);
+                        order_addToQueue(p_queue, entry);
                     }    
                     sortQueue(p_queue, p_elevator);
                 }
@@ -182,31 +307,72 @@ void processRequests(OrderQueue* p_queue, Elevator* p_elevator)
     }
 } 
 
-// int main()
-// {
-//     printf("Testing:\n\n");
-//     Elevator heiss =  {0, 4, 0, -1};
+//OLD CODE
+void handler_run_v1()
+{
+    elevio_init();
+    elevio_motorDirection(DIRN_STOP);
+    Handler handler = {true};
+    OrderQueue q = order_createQueue();
+    Elevator elevator = elev_createElevator();
 
-//     OrderQueue navn = createQueue();
+    elev_initElevator(&elevator);
+    handler_resetLamps();
+    int timer = 0;
 
-//     QueueEntry e1 = {1, BUTTON_HALL_UP};
-//     QueueEntry e3 = {3, BUTTON_HALL_UP};
-//     QueueEntry e2 = {2, BUTTON_HALL_UP};
-//     QueueEntry e4 = {4, BUTTON_HALL_DOWN};
-//     QueueEntry e5 = {3, BUTTON_HALL_DOWN};
-//     QueueEntry e6 = {2, BUTTON_HALL_DOWN};
-//     QueueEntry e7 = {1, BUTTON_CAB};
-//     QueueEntry e8 = {2, BUTTON_CAB};
-//     QueueEntry e9 = {3, BUTTON_CAB};
-//     QueueEntry e10 = {4, BUTTON_CAB};    
+    while(handler.go){
+        
+        if(elevio_stopButton())
+        {
+            elev_emergencyStop(&elevator);
+            break;
+        }
+        
+        processRequests(&q, &elevator);
+        order_printQueue(&q);
 
+        //Dersom ikke tom kø
+        if ((q.queue[0].floor != -1) && (timer <= 0))
+        {
+            elev_moveTo(&elevator, q.queue[0].floor);
+        } 
+        else 
+        {
+            if (elevator.motor_dir != DIRN_STOP)
+            {
+                elev_setMotorDir(&elevator, DIRN_STOP);  
+            }
+        }
+        
 
-//     addToQueue(&navn, e1);
-//     addToQueue(&navn, e9);
-//     addToQueue(&navn, e6);
-//     addToQueue(&navn, e7);
-//     printQueue(&navn);
-//     sortQueue(&navn, &heiss);
-//     printQueue(&navn);
-//     return 0;
-// }
+        //Elevator arrived
+        if (elevator.has_arrived)
+        {   
+            printf("ELEVATOR : arrived at floor %i\n", elevator.current_floor);
+            order_removeFromQueue(&q, elevator.current_floor);
+            elev_openDoor(&elevator);
+            timer += DOOR_OPEN_TIME_MS;
+            elevator.has_arrived = false;
+        } 
+        
+          
+        //Door is ready to be closed
+        if (timer <= 0 && elevator.door_open == true) 
+        {
+            if (elevio_obstruction()) 
+            {
+                timer += DOOR_OBS_TIME_MS;
+                printf("ELEVATOR -> DOOR : obs!\n");
+            }
+            else
+            {
+                elev_closeDoor(&elevator);
+                timer = 0;
+            } 
+        }
+
+        //Decrement timer
+        if (timer > 0) timer -= LOOP_DELAY_MS;
+        nanosleep(&(struct timespec){0, LOOP_DELAY_MS*1000*1000}, NULL);        
+    }
+}

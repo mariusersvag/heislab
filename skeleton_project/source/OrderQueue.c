@@ -1,15 +1,14 @@
 #include "../include/OrderQueue.h"
 
-void clearQueue(OrderQueue* p_queue)
+void order_clearQueue(OrderQueue* p_queue)
 {
     for (int i = 0; i < QUEUESIZE; i++)
     {
-        p_queue->queue[i].floor = -1;
-        
+        p_queue->queue[i].floor = -1;   
     }
 }
 
-void addToQueue(OrderQueue* p_queue, QueueEntry entry)
+void order_addToQueue(OrderQueue* p_queue, QueueEntry entry)
 {
     elevio_buttonLamp(entry.floor, entry.dir, 1);
 
@@ -19,14 +18,8 @@ void addToQueue(OrderQueue* p_queue, QueueEntry entry)
         int q_dir = p_queue->queue[i].dir;
 
         //Dersom floor er i Queue
-        if ((q_floor == entry.floor)) 
+        if (q_floor == entry.floor)
         {
-            // if (q_dir == BUTTON_CAB) 
-            // {
-            //     p_queue->queue[i].dir = entry.dir;
-            //     return;
-            // }
-
             //Dersom entry er i Queue
             if (entry.dir == BUTTON_CAB) {
                 p_queue->queue[i].dir = BUTTON_CAB;
@@ -47,36 +40,10 @@ void addToQueue(OrderQueue* p_queue, QueueEntry entry)
             return;  
         } 
     }
-
-
-    /*
-    for (int i = 0; i < QUEUESIZE; i++)
-    {
-        if (p_queue->queue[i].floor != entry.floor)
-        {
-            if (p_queue->queue[i].floor == -1)
-            {
-                p_queue->queue[i] = entry;
-                return;
-            }   
-        
-        } 
-        
-        else if (p_queue->queue[i].dir == BUTTON_CAB)
-        {
-            p_queue->queue[i].dir = entry.dir;
-            return;
-        }
-
-        else if (entry.dir == BUTTON_CAB) return;
-
-        return;
-    }   
-    */
 }
 
 
-void removeFromQueue(OrderQueue* p_queue, int floor)
+void order_removeFromQueue(OrderQueue* p_queue, int floor)
 {
     for (int i = 0; i < 3; i++) {
         elevio_buttonLamp(floor, i, 0);
@@ -94,17 +61,9 @@ void removeFromQueue(OrderQueue* p_queue, int floor)
             break; // Stop once the first match is removed
         }
     }
-    
-    // int i = 0;
-    // while (p_queue->queue[i].floor == floor || p_queue->queue[i].floor == -1)
-    // {
-    //     p_queue->queue[i] = p_queue->queue[i + 1];
-    //     p_queue->queue[i + 1].floor = -1;
-    //     i++;
-    // }
 }
 
-void printQueue(OrderQueue *p_queue)
+void order_printQueue(OrderQueue *p_queue)
 {
     static OrderQueue last_queue; // Forrige kø
 
@@ -130,9 +89,9 @@ void printQueue(OrderQueue *p_queue)
     }
 }
 
-OrderQueue createQueue()
+OrderQueue order_createQueue()
 {
     OrderQueue queue;
-    clearQueue(&queue);
+    order_clearQueue(&queue);
     return queue;
 }

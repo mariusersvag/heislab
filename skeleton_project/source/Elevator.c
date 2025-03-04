@@ -1,22 +1,28 @@
 #include <time.h>
 #include "../include/Elevator.h"
 
-void stop(Elevator *p_elevator)
+void elev_stop(Elevator *p_elevator)
 {
-    setMotorDir(p_elevator, DIRN_STOP);
+    elev_setMotorDir(p_elevator, DIRN_STOP);
     elevio_stopLamp(1);
 }
 
 
 
-Elevator createElevator()
+Elevator elev_createElevator()
 {   
-    Elevator elev = {1, 1, 0, 0, 0, DIRN_STOP};
+    Elevator elev = {1, 1, 0, 0, 0, 0, DIRN_STOP};
     return elev;
 }
 
-void initElevator(Elevator* p_elevator)
+void elev_initElevator(Elevator* p_elevator)
 {
+    while (elevio_floorSensor() == -1) 
+    {
+        elev_setMotorDir(p_elevator, DIRN_UP);
+    }
+    elev_setMotorDir(p_elevator, DIRN_STOP);
+
     p_elevator->current_floor = elevio_floorSensor();
     elevio_floorIndicator(p_elevator->current_floor);
     elevio_doorOpenLamp(p_elevator->door_open);
@@ -38,7 +44,7 @@ void initElevator(Elevator* p_elevator)
     return;
 }
 
-void moveTo(Elevator *p_elevator, int floor)
+void elev_moveTo(Elevator *p_elevator, int floor)
 {   
     //Floor lights
     int floor_sensor = elevio_floorSensor();
@@ -53,7 +59,7 @@ void moveTo(Elevator *p_elevator, int floor)
         //Update floors
         p_elevator->previous_floor = p_elevator->current_floor;
         p_elevator->current_floor = floor;
-        setMotorDir(p_elevator, DIRN_STOP);
+        elev_setMotorDir(p_elevator, DIRN_STOP);
         p_elevator->has_arrived = true;
         return;
     }
@@ -61,52 +67,46 @@ void moveTo(Elevator *p_elevator, int floor)
     //UP and DOWN
     if ((p_elevator->current_floor) > floor)
     {
-        setMotorDir(p_elevator, DIRN_DOWN);
+        elev_setMotorDir(p_elevator, DIRN_DOWN);
+        p_elevator->direction = 1;
     } 
     else 
     {
-        setMotorDir(p_elevator, DIRN_UP);
+        elev_setMotorDir(p_elevator, DIRN_UP);
+        p_elevator->direction = 0;
     }
 }
 
 
 
-void openDoor(Elevator *p_elevator)
+void elev_openDoor(Elevator *p_elevator)
 {
     if (p_elevator->motor_dir == DIRN_STOP) 
     {
         elevio_doorOpenLamp(1);
         p_elevator->door_open = true;
     }
-    printf("ELEVATOR -> DOOR : door is OPEN\n");
+    printf("\t\t\t\tDOOR is OPEN\n\n");
 }
 
 
 
-void closeDoor(Elevator *p_elevator)
+void elev_closeDoor(Elevator *p_elevator)
 {   
     elevio_doorOpenLamp(0);
     p_elevator->door_open = false;
-    printf("ELEVATOR -> DOOR : door is CLOSED\n\n");
+    printf("\t\t\t\tDOOR is CLOSED\n\n");
 }
 
 
-//DELETE
-void handleObstruction(Elevator *p_elevator)
-{   
-    int ikke_i_bruk = 2;
-}
-
-
-
-void updateCurrentFloor(Elevator *p_elevator)
+void elev_updateCurrentFloor(Elevator *p_elevator)
 {
     p_elevator->current_floor = elevio_floorSensor();
 }
 
 
 
-void setMotorDir(Elevator *p_elevator, MotorDirection dir)
+void elev_setMotorDir(Elevator *p_elevator, MotorDirection dir)
 {
     elevio_motorDirection(dir);
     p_elevator->motor_dir = dir;
@@ -114,7 +114,7 @@ void setMotorDir(Elevator *p_elevator, MotorDirection dir)
 
 
 
-void emergencyStop(Elevator *p_elevator)
+void elev_emergencyStop(Elevator *p_elevator)
 {
     elevio_motorDirection(DIRN_STOP);
     p_elevator->motor_dir = DIRN_STOP;

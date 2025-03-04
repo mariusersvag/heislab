@@ -8,24 +8,20 @@
 typedef struct {
     int current_floor;
     int previous_floor;
+    int direction;
     bool door_open;
     bool has_arrived;
     bool is_obs;
     MotorDirection motor_dir;
 } Elevator;
 
-Elevator createElevator();
-void initElevator(Elevator* p_elevator);
-
-void stop(Elevator* p_elevator);
-void moveTo(Elevator* p_elevator, int floor);
-
-void openDoor(Elevator* p_elevator);
-void closeDoor(Elevator* p_elevator);
-
-void updateCurrentFloor(Elevator* p_elevator);
-void setMotorDir(Elevator* p_elevator, MotorDirection dir);
-
-void emergencyStop(Elevator* p_elevator);
-void handleObstruction(Elevator* p_elevator);
+Elevator elev_createElevator();
+void elev_initElevator(Elevator* p_elevator);
+void elev_stop(Elevator* p_elevator);
+void elev_moveTo(Elevator* p_elevator, int floor);
+void elev_openDoor(Elevator* p_elevator);
+void elev_closeDoor(Elevator* p_elevator);
+void elev_updateCurrentFloor(Elevator* p_elevator);
+void elev_setMotorDir(Elevator* p_elevator, MotorDirection dir);
+void elev_emergencyStop(Elevator* p_elevator);
 
