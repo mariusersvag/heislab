@@ -15,7 +15,7 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
     if (p_e->direction == 0) //UP *************************************** 0 : DIR UP ***********************
     {   
         //First priority loop
-        int f = p_e->current_floor + 1;
+        int f = p_e->current_floor;
         while (f < N_FLOORS) {
             if (p_m->list[f].cab == 1 || p_m->list[f].hall_up == 1 )
             {
@@ -44,7 +44,7 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
     else if (p_e->direction == 1) //DOWN ******************************** 1 : DIR DOWN *************************
     {
         //First priority loop
-        int f = p_e->current_floor - 1;
+        int f = p_e->current_floor;
         while (f >= 0)
         {
             if (p_m->list[f].cab == 1 || p_m->list[f].hall_down == 1) 
@@ -88,7 +88,7 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
 
         //Scan down
         f = p_e->current_floor;
-        while (f > 0)
+        while (f >= 0)
         {
             if (matrix_isCallFromFloor(p_m, f))
             {
@@ -156,7 +156,7 @@ void handler_run_matrix()
             if (elevio_obstruction()) 
             {
                 timer += DOOR_OBS_TIME_MS;
-                printf("DOOR : obs!\n\n");
+                printf("\t\t\t\tdoor OBS!\n\n");
             }
             else
             {
