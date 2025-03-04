@@ -5,6 +5,10 @@
 #include "driver/elevio.h"
 #include "../include/Handler.h"
 
+#define DOOR_OPEN_TIME_MS 1000
+#define DOOR_OBS_TIME_MS 1000
+#define LOOP_DELAY_MS 20
+
 int main(){
     
     elevio_init();
@@ -24,9 +28,12 @@ int main(){
     }
     elevio_stopLamp(0);
     
+    int timer = 0;
 
     //Main loop
     while(handler.go){
+
+        // printf("timer: %i\n", timer);
 
         if(elevio_stopButton())
         {
@@ -38,7 +45,7 @@ int main(){
         printQueue(&q);
 
         //Dersom ikke tom kø
-        if (q.queue[0].floor != -1) 
+        if ((q.queue[0].floor != -1) && (timer <= 0))
         {
             moveTo(&elevator, q.queue[0].floor);
         } 
@@ -46,25 +53,44 @@ int main(){
         {
             if (elevator.motor_dir != DIRN_STOP)
             {
-                setMotorDir(&elevator, DIRN_STOP);
+                setMotorDir(&elevator, DIRN_STOP);  
             }
         }
         
+
+        //Elevator arrived
         if (elevator.has_arrived)
         {   
             printf("ELEVATOR : arrived at floor %i\n", elevator.current_floor);
             removeFromQueue(&q, elevator.current_floor);
-            // sortQueue(&q, &elevator);
-            // sleep(3);
             openDoor(&elevator);
-            sleep(1);
-            closeDoor(&elevator);
-            // sleep(3);
+            timer += DOOR_OPEN_TIME_MS;
             elevator.has_arrived = false;
         } 
+        
+          
+        //Door is ready to be closed
+        if (timer <= 0 && elevator.door_open == true) 
+        {
+            if (elevio_obstruction()) 
+            {
+                timer += DOOR_OBS_TIME_MS;
+                printf("ELEVATOR -> DOOR : obs!\n");
+            }
+            else
+            {
+                closeDoor(&elevator);
+                timer = 0;
+            } 
+        }
+
+
+
+        //Decrement timer
+        if (timer > 0) timer -= LOOP_DELAY_MS;
+
+        //20ms loop delay (for timer)
+        nanosleep(&(struct timespec){0, LOOP_DELAY_MS*1000*1000}, NULL);        
     }
     return 0;
 }
-
-//20ms loop delay
-// nanosleep(&(struct timespec){0, 10*1000*1000}, NULL);        

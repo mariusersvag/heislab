@@ -11,7 +11,7 @@ void stop(Elevator *p_elevator)
 
 Elevator createElevator()
 {   
-    Elevator elev = {1, 1, 0, 0, DIRN_STOP};
+    Elevator elev = {1, 1, 0, 0, 0, DIRN_STOP};
     return elev;
 }
 
@@ -85,17 +85,9 @@ void openDoor(Elevator *p_elevator)
 
 void closeDoor(Elevator *p_elevator)
 {   
-    while (elevio_obstruction()) 
-    {
-        sleep(3);
-        printf("ELEVATOR -> DOOR : obs!\n");
-    }
-
     elevio_doorOpenLamp(0);
     p_elevator->door_open = false;
-
     printf("ELEVATOR -> DOOR : door is CLOSED\n\n");
-
 }
 
 

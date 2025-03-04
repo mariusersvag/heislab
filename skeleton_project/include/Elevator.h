@@ -10,6 +10,7 @@ typedef struct {
     int previous_floor;
     bool door_open;
     bool has_arrived;
+    bool is_obs;
     MotorDirection motor_dir;
 } Elevator;
 
