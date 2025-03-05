@@ -7,6 +7,18 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
     if (p_e->current_floor == N_FLOORS - 1) p_e->direction = 1;
     if (p_e->current_floor == 0) p_e->direction = 0;
 
+    // Check if there's a request at the current floor AND the elevator is stopped
+    if (p_e->motor_dir == DIRN_STOP && 
+        (p_m->list[p_e->current_floor].cab == 1 || 
+        p_m->list[p_e->current_floor].hall_up == 1 || 
+        p_m->list[p_e->current_floor].hall_down == 1)) 
+    {
+        QueueEntry e = {p_e->current_floor, BUTTON_CAB};
+        p_q->queue[0] = e;
+        return;
+    }
+
+
     if (matrix_isEmpty(p_m)) {
         p_e->direction = 2; 
         return;
