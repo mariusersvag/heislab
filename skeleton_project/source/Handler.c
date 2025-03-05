@@ -18,7 +18,6 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
         return;
     }
 
-
     if (matrix_isEmpty(p_m)) {
         p_e->direction = 2; 
         return;
@@ -29,10 +28,8 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
         //First priority loop
         int f = p_e->current_floor + 1;
         while (f < N_FLOORS) {
-            if (p_m->list[f].cab == 1 || p_m->list[f].hall_up == 1 )
-            {
-                QueueEntry e = {f, BUTTON_CAB};
-                p_q->queue[0] = e;
+            if (p_m->list[f].cab == 1 || p_m->list[f].hall_up == 1 ) {
+                p_q->queue[0] = (QueueEntry){f, BUTTON_CAB};
                 return;
             }
             f = f + 1;
@@ -40,12 +37,9 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
 
         //Second priority loop
         f = N_FLOORS - 1;
-        while (f > p_e->current_floor)
-        {
-            if (p_m->list[f].hall_down == 1)
-            {
-                QueueEntry e = {f, BUTTON_CAB};
-                p_q->queue[0] = e;
+        while (f > p_e->current_floor){
+            if (p_m->list[f].hall_down == 1) {
+                p_q->queue[0] = (QueueEntry){f, BUTTON_CAB};
                 return;
             }
             f = f - 1;
@@ -57,12 +51,9 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
     {
         //First priority loop
         int f = p_e->current_floor - 1;
-        while (f >= 0)
-        {
-            if (p_m->list[f].cab == 1 || p_m->list[f].hall_down == 1) 
-            {
-                QueueEntry e = {f, BUTTON_CAB};
-                p_q->queue[0] = e;
+        while (f >= 0){
+            if (p_m->list[f].cab == 1 || p_m->list[f].hall_down == 1) {
+                p_q->queue[0] = (QueueEntry){f, BUTTON_CAB};
                 return; 
             }
             f = f - 1;
@@ -70,12 +61,9 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
 
         //Second priority loop
         f = 0;
-        while (f < p_e->current_floor)
-        {
-            if (p_m->list[f].hall_up == 1)
-            {
-                QueueEntry e = {f, BUTTON_CAB};
-                p_q->queue[0] = e;
+        while (f < p_e->current_floor){
+            if (p_m->list[f].hall_up == 1) {
+                p_q->queue[0] = (QueueEntry){f, BUTTON_CAB};
                 return;
             }
             f = f + 1;
@@ -86,28 +74,18 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
     }
     else //TO DETERMINE WANTED DIR ********************************** 2 : DIR UNKNOWN *********************
     {
-        //Scan up
-        int f = p_e ->current_floor + 1;
-        while (f < N_FLOORS) 
-        {
-            if (matrix_isCallFromFloor(p_m, f))
-            {
+        //Unidirectional scan for order
+        int floor = p_e->current_floor;
+        for (int offset = 1; offset < N_FLOORS; offset++) {
+            //Up case
+            if (((floor + offset) < N_FLOORS) && matrix_isCallFromFloor(p_m, floor + offset)) {
                 p_e->direction = 0;
                 return;
             }
-            f = f + 1;
-        }
-
-        //Scan down
-        f = p_e->current_floor - 1;
-        while (f >= 0)
-        {
-            if (matrix_isCallFromFloor(p_m, f))
-            {
+            if (((floor - offset) >= 0) && matrix_isCallFromFloor(p_m, floor - offset)) {
                 p_e->direction = 1;
                 return;
             }
-            f = f - 1;
         }
     }
 }
@@ -134,7 +112,6 @@ void handler_run_matrix()
         
         handler_updateMatrix(&m);
         handler_updateQueue(&m, &q, &elevator);
-
         handler_printElevatorStates(&elevator);
         matrix_printMatrix(&m);
         order_printQueue(&q);
@@ -144,12 +121,9 @@ void handler_run_matrix()
         {
             elev_moveTo(&elevator, q.queue[0].floor);
         } 
-        else 
+        else if (elevator.motor_dir != DIRN_STOP)
         {
-            if (elevator.motor_dir != DIRN_STOP)
-            {
-                elev_setMotorDir(&elevator, DIRN_STOP);  
-            }
+            elev_setMotorDir(&elevator, DIRN_STOP);  
         }
         
         //Elevator arrived
@@ -193,15 +167,9 @@ void handler_updateMatrix(Matrix* m)
             {
                 elevio_buttonLamp(etasje, (ButtonType)button, 1);
                 //Case for 0, 1, and 2
-                if (button == 0) {
-                    m->list[etasje].hall_up = 1;
-                }
-                else if (button == 1){
-                    m->list[etasje].hall_down = 1;
-                }
-                else {
-                    m->list[etasje].cab = 1;
-                }
+                if (button == 0) m->list[etasje].hall_up = 1;
+                else if (button == 1) m->list[etasje].hall_down = 1;
+                else m->list[etasje].cab = 1;
             }
         }
     }
@@ -215,6 +183,7 @@ void handler_resetLamps()
             elevio_buttonLamp(etasje, buttontype, 0);       
         }
     }
+    elevio_doorOpenLamp(0);
     elevio_stopLamp(0);
 }
 
@@ -230,17 +199,12 @@ void handler_printElevatorStates(Elevator* e)
     assert(e->direction >= 0 && e->direction <= 2);
     static int state;
     
-    if (e->direction != state)
-    {
-        if (e->direction == 0)
-        {
+    if (e->direction != state){
+        if (e->direction == 0){
             printf("direction: UP\n");
-        } else if (e->direction == 1)
-        {
+        } else if (e->direction == 1){
             printf("direction: DOWN\n");
-        }
-        else
-        {
+        } else{
             printf("direction: IDLE\n");
         }
         state = e->direction;

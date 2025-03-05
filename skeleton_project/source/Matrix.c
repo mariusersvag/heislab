@@ -81,6 +81,7 @@ int matrix_isEmpty(Matrix *m)
 
 int matrix_isCallFromFloor(Matrix* m, int floor) 
 {
+    assert(floor >= 0 && floor < N_FLOORS);
     return (int)(m->list[floor].cab || m->list[floor].hall_up || m->list[floor].hall_down);
 }
 

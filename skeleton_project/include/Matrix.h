@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <assert.h>
 
 #define N_FLOORS 4
 

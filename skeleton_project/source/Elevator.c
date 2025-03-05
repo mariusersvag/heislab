@@ -7,8 +7,6 @@ void elev_stop(Elevator *p_elevator)
     elevio_stopLamp(1);
 }
 
-
-
 Elevator elev_createElevator()
 {   
     Elevator elev = {1, 1, 0, 0, 0, 0, DIRN_STOP};
@@ -17,7 +15,7 @@ Elevator elev_createElevator()
 
 void elev_initElevator(Elevator* p_elevator)
 {
-    while (elevio_floorSensor() == -1) 
+    while (elevio_floorSensor() == -1)  
     {
         elev_setMotorDir(p_elevator, DIRN_UP);
     }
@@ -27,29 +25,18 @@ void elev_initElevator(Elevator* p_elevator)
     elevio_floorIndicator(p_elevator->current_floor);
     elevio_doorOpenLamp(p_elevator->door_open);
 
-    //Edge cases (1 and 4)
-    if (p_elevator->current_floor == 0) 
-    {
-        p_elevator->previous_floor = 1;
-    }
-    else if (p_elevator->current_floor == 3)
-    {
-        p_elevator->previous_floor = 2;
-    }
-    else 
-    {
-        p_elevator->previous_floor = (p_elevator->current_floor - 1);
-    }
+    //Set previous floor
+    if (p_elevator->current_floor == 0) p_elevator->previous_floor = 1;
+    else if (p_elevator->current_floor == 3) p_elevator->previous_floor = 2;
+    else p_elevator->previous_floor = (p_elevator->current_floor - 1);
     printf("ELEVATOR -> INIT : cf, pf = {%i, %i}\n", p_elevator->current_floor, p_elevator->previous_floor);
     return;
 }
 
 void elev_moveTo(Elevator *p_elevator, int floor)
 {   
-
     if (floor == 0) p_elevator->direction = 1;
     if (floor == 3) p_elevator->direction = 0;
-
 
     //Floor lights
     int floor_sensor = elevio_floorSensor();
