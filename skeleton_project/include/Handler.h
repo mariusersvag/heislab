@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "Elevator.h"
 #include "OrderQueue.h"
@@ -23,6 +24,7 @@ void handler_updateMatrix(Matrix* m);
 void handler_resetLamps();
 void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e);
 void handler_printArrived(int floor);
+void handler_printElevatorStates(Elevator* e);
 
 
 //-----------------------------------FROM FIRST TRY-----------------

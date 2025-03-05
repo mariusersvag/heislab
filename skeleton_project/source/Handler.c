@@ -4,7 +4,7 @@
 
 void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
 {
-    if (p_e->current_floor == 3) p_e->direction = 1;
+    if (p_e->current_floor == N_FLOORS - 1) p_e->direction = 1;
     if (p_e->current_floor == 0) p_e->direction = 0;
 
     if (matrix_isEmpty(p_m)) {
@@ -15,7 +15,7 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
     if (p_e->direction == 0) //UP *************************************** 0 : DIR UP ***********************
     {   
         //First priority loop
-        int f = p_e->current_floor;
+        int f = p_e->current_floor + 1;
         while (f < N_FLOORS) {
             if (p_m->list[f].cab == 1 || p_m->list[f].hall_up == 1 )
             {
@@ -38,13 +38,13 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
             }
             f = f - 1;
         }
-        //SET DIRECTION UNKNOWN IF NO ENTRIES WERE FOUND
+        //SET DIRECTION X IF NO ENTRIES WERE FOUND
         p_e->direction = 2;
     } 
     else if (p_e->direction == 1) //DOWN ******************************** 1 : DIR DOWN *************************
     {
         //First priority loop
-        int f = p_e->current_floor;
+        int f = p_e->current_floor - 1;
         while (f >= 0)
         {
             if (p_m->list[f].cab == 1 || p_m->list[f].hall_down == 1) 
@@ -69,13 +69,13 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
             f = f + 1;
         }
 
-        //SET DIRECTION UNKNOWN IF NO ENTRIES WERE FOUND
+        //SET DIRECTION X IF NO ENTRIES WERE FOUND
         p_e->direction = 2;
     }
     else //TO DETERMINE WANTED DIR ********************************** 2 : DIR UNKNOWN *********************
     {
         //Scan up
-        int f = p_e ->current_floor;
+        int f = p_e ->current_floor + 1;
         while (f < N_FLOORS) 
         {
             if (matrix_isCallFromFloor(p_m, f))
@@ -87,7 +87,7 @@ void handler_updateQueue(Matrix* p_m, OrderQueue* p_q, Elevator* p_e)
         }
 
         //Scan down
-        f = p_e->current_floor;
+        f = p_e->current_floor - 1;
         while (f >= 0)
         {
             if (matrix_isCallFromFloor(p_m, f))
@@ -110,10 +110,10 @@ void handler_run_matrix()
     Matrix m = matrix_createMatrix();
     elev_initElevator(&elevator);
     handler_resetLamps();
-    int timer = 0;
 
-    while(handler.go){
-        
+    int timer = 0;
+    while (handler.go)
+    {
         if(elevio_stopButton())
         {
             elev_emergencyStop(&elevator);
@@ -123,6 +123,7 @@ void handler_run_matrix()
         handler_updateMatrix(&m);
         handler_updateQueue(&m, &q, &elevator);
 
+        handler_printElevatorStates(&elevator);
         matrix_printMatrix(&m);
         order_printQueue(&q);
 
@@ -210,6 +211,28 @@ void handler_printArrived(int floor)
     printf("                                                                    _____\n");
     printf("##########################################       arrived @ floor    | %i |\n", floor);
     printf("                                                                    ¨¨¨¨¨\n");
+}
+
+void handler_printElevatorStates(Elevator* e)
+{
+    assert(e->direction >= 0 && e->direction <= 2);
+    static int state;
+    
+    if (e->direction != state)
+    {
+        if (e->direction == 0)
+        {
+            printf("direction: UP\n");
+        } else if (e->direction == 1)
+        {
+            printf("direction: DOWN\n");
+        }
+        else
+        {
+            printf("direction: IDLE\n");
+        }
+        state = e->direction;
+    }
 }
 
 //OLD

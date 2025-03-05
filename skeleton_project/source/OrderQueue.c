@@ -76,12 +76,13 @@ void order_printQueue(OrderQueue *p_queue)
     }
 
     if (isQueueDifferent) {
-        printf("QUEUE : [");
+        printf(" ---------- q : [");
         for (int i = 0; i < QUEUESIZE; i++) 
         {
-            printf("%i, ", p_queue->queue[i].floor);    
+            if (p_queue->queue[i].floor == -1) continue;
+            printf("%i", p_queue->queue[i].floor);    
         }
-        printf("]\n");
+        printf("] ---------\n");
 
         for (int i = 0; i < QUEUESIZE; i++) {
             last_queue.queue[i] = p_queue->queue[i];

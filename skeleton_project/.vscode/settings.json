@@ -3,6 +3,7 @@
         "elevator.h": "c",
         "con_load.h": "c",
         "elevio.h": "c",
-        "handler.h": "c"
+        "handler.h": "c",
+        "orderqueue.h": "c"
     }
 }
